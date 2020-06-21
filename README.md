@@ -10,8 +10,7 @@ Create a program to run timed quizzes via the command line.
 - quiz-game.exe (executes application with default flags)
 - go build. && quiz-game.exe
 - quiz-game.exe -h or --help: gives information about cmd flags
-- quiz-game.exe --csv file.csv -limit=10 -shuffle=true
-- flag format: -flag=value | --flag value
+- quiz-game.exe --csv file.csv -limit=10 -shuffle=true (flag format: -flag=value | --flag value)
 - for file names with whitespaces: --csv "file name.csv"
 
 **Features:**
