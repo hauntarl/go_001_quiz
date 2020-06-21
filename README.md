@@ -30,9 +30,4 @@ Create a program to run timed quizzes via the command line.
 - encoding/csv: to read data from .csv files
 - strings: to format and clean user input
 - time: to set expiry for quiz
-
-**Bonus:**
-
-- shuffle flag to randomize quiz
-- rand package: to shuffle the problem set
-- more formatting and cleaning user input
+* rand: to shuffle the problem set
