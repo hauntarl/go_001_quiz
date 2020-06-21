@@ -2,6 +2,8 @@
 
 Create a program to run timed quizzes via the command line.
 
+Implementation of Quiz Game from gophercises, including the bonus section.
+
 **[Gophercises](https://courses.calhoun.io/courses/cor_gophercises)**  by Jon Calhoun
 
 **Run Commands:**
