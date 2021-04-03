@@ -36,6 +36,15 @@ Implementation of Quiz Game from gophercises, including the bonus section.
 **Output:**
 
 ``` terminal
+D:\gophercises\quiz-game>go run main.go -h
+Usage of C:\Users\hauntarl\AppData\Local\Temp\go-build2300610919\b001\exe\main.exe:
+  -csv string
+        csv file format: 'question,answer' (default "problems.csv")
+  -limit int
+        the time limit for quiz in seconds (default 30)
+  -shuffle
+        shuffles quiz problems: 'true/false'
+
 D:\gophercises\quiz-game>go run main.go --limit 10 -shuffle=true
 Problem #1  : 1+2 = 3
 Problem #2  : 2+4 = 6
