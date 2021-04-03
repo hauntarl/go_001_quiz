@@ -10,11 +10,13 @@ import (
 	"time"
 )
 
-type problem struct {
-	ques, ans string
-}
+var (
+	fileName  *string
+	timeLimit *int
+	shuffle   *bool
+)
 
-func main() {
+func init() {
 	/*
 		flag pkg:
 			- provides options for command line programs
@@ -26,16 +28,28 @@ func main() {
 			  based on given flag inputs
 	*/
 	// set a csv flag
-	csvFileName := flag.String("csv", "problems.csv", "csv file format: 'question,answer'")
-	timeLimit := flag.Int("limit", 30, "the time limit for quiz in seconds")
-	isShuffle := flag.Bool("shuffle", false, "shuffles quiz problems: 'true/false'")
-	// parse all the flags which were set above this statement
-	flag.Parse()
+	fileName = flag.String(
+		"csv", "problems.csv",
+		"csv file format: 'question,answer'",
+	)
+	timeLimit = flag.Int(
+		"limit", 30,
+		"the time limit for quiz in seconds",
+	)
+	shuffle = flag.Bool(
+		"shuffle", false,
+		"shuffles quiz problems: 'true/false'",
+	)
+	flag.Parse() // parse all the flags which were set above this statement
+}
 
+type problem struct{ question, answer string }
+
+func main() {
 	// open file from flag value
-	file, err := os.Open(*csvFileName)
+	file, err := os.Open(*fileName)
 	if err != nil {
-		exit(fmt.Sprintf("Failed to open the file: %s", *csvFileName))
+		exit(fmt.Sprintf("failed to open the file: %s", *fileName))
 	}
 	defer file.Close()
 
@@ -43,55 +57,55 @@ func main() {
 	r := csv.NewReader(file)
 	lines, err := r.ReadAll()
 	if err != nil {
-		exit("Failed to parse the provided CSV file.")
+		exit("failed to parse the provided .csv file.")
 	}
-	// parse the data to problem struct
-	problems := parseLines(lines)
-	// bonus: shuffle problems if shuffle flag true
-	if *isShuffle {
+	problems := parseLines(lines) // parse the data to problem struct
+	if *shuffle {
+		// bonus: shuffle problems if shuffle flag true
 		rand.Seed(time.Now().UnixNano())
-		rand.Shuffle(len(problems), func(i, j int) { problems[i], problems[j] = problems[j], problems[i] })
+		rand.Shuffle(len(problems), func(i, j int) {
+			problems[i], problems[j] = problems[j], problems[i]
+		})
 	}
-
-	// set timer
-	timer := time.NewTimer(time.Duration(*timeLimit) * time.Second)
 
 	var (
-		ansCh   chan string = make(chan string)
-		correct int
+		// set timer
+		timer = time.NewTimer(time.Duration(*timeLimit) * time.Second)
+		ch    = make(chan string)
+		count int
 	)
 	// take a quiz
 	for i, p := range problems {
-		fmt.Printf("Problem #%-3d: %s = ", i+1, p.ques)
+		fmt.Printf("Problem #%-3d: %s = ", i+1, p.question)
 		go func() {
 			var ans string
 			fmt.Scanf("%s\n", &ans)
-			ansCh <- strings.ToLower(ans)
+			ch <- strings.ToLower(ans)
 		}()
 
 		select {
 		case <-timer.C:
-			fmt.Printf("\nYou got %d/%d correct!", correct, len(problems))
+			fmt.Printf("\nYou got %d/%d correct!", count, len(problems))
 			return
-		case ans := <-ansCh:
-			if ans == p.ans {
-				correct++
+		case ans := <-ch:
+			if ans == p.answer {
+				count++
 			}
 		}
 	}
 	timer.Stop()
-	fmt.Printf("You got %d/%d correct!", correct, len(problems))
+	fmt.Printf("You got %d/%d correct!", count, len(problems))
 }
 
 func parseLines(lines [][]string) []problem {
-	ret := make([]problem, len(lines))
+	res := make([]problem, len(lines))
 	for i, line := range lines {
-		ret[i] = problem{
-			ques: line[0],
-			ans:  strings.ToLower(strings.TrimSpace(line[1])),
+		res[i] = problem{
+			question: line[0],
+			answer:   strings.ToLower(strings.TrimSpace(line[1])),
 		}
 	}
-	return ret
+	return res
 }
 
 func exit(msg string) {
